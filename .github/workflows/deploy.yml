@@ -29,7 +29,7 @@ jobs:
 
       - name: Build & Push Docker image
         run: |
-          IMAGE=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/todo-list/todo-list-API:latest
+          IMAGE=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/todo-list/todo-list-api:latest
           docker build -t $IMAGE .
           docker push $IMAGE
 
@@ -40,7 +40,7 @@ jobs:
           username: ${{ secrets.GCP_VM_USER }}
           key: ${{ secrets.GCP_VM_SSH_KEY }}
           script: |
-            IMAGE=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/todo-list/todo-list-API:latest
+            IMAGE=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/todo-list/todo-list-api:latest
             docker pull $IMAGE
             docker stop api || true
             docker rm api || true
