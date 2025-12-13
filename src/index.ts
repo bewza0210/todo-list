@@ -5,6 +5,12 @@ const app = express();
 app.use(express.json());
 
 // GET all todos
+app.get("/hello", (req: Request, res: Response) => {
+  res.json({
+    message: "Hello API",
+  });
+});
+// GET all todos
 app.get("/todos", (req: Request, res: Response) => {
   res.json(TodoModel.getAll());
 });
