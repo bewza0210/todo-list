@@ -6,9 +6,7 @@ app.use(express.json());
 
 // GET all todos
 app.get("/hello", (req: Request, res: Response) => {
-  res.json({
-    message: "Hello API",
-  });
+  res.json({message: "Hello API is working! for Deployment Test CI/CD",});
 });
 // GET all todos
 app.get("/todos", (req: Request, res: Response) => {
