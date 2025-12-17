@@ -94,3 +94,13 @@ jobs:
               -p 3000:3000 \
               --restart unless-stopped \
               $IMAGE
+
+      # trigger ให้ Jenkins build
+      - name: Trigger Jenkins Deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.GCP_VM_HOST }}
+          username: ${{ secrets.GCP_VM_USER }}
+          key: ${{ secrets.GCP_VM_SSH_KEY }}
+          script: |
+            curl -u sa:1234 "http://localhost:8080/job/deploy-main/build?token=deploy-main-token-2025"
