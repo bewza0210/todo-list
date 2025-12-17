@@ -6,7 +6,7 @@ app.use(express.json());
 
 // GET all todos
 app.get("/hello", (req: Request, res: Response) => {
-  res.json({message: "Hello Dew",});
+  res.json({message: "Hello Dew444",});
 });
 // GET all todos
 app.get("/todos", (req: Request, res: Response) => {
