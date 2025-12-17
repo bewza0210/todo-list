@@ -1,12 +1,49 @@
-name: Deploy Node.js API to GCP VM
+# ci-cd-guthubAction.yml
+name: Node.js CI/CD
 
 on:
   push:
     branches: ["main"]
+  pull_request:
+    branches: ["main"]
 
 jobs:
-  deploy:
+  # =====================
+  # CI JOB (PR + PUSH)
+  # =====================
+  ci:
+    name: CI - Test & Build
     runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build project
+        run: npm run build
+
+  # =====================
+  # CD JOB (PUSH main ONLY)
+  # =====================
+  deploy:
+    name: Deploy Node.js API to GCP VM
+    needs: ci
+    runs-on: ubuntu-latest
+
+    # ❗ deploy เฉพาะ push main เท่านั้น
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout source
