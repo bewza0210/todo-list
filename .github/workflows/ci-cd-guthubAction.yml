@@ -41,20 +41,48 @@ jobs:
     name: Deploy Node.js API to GCP VM
     needs: ci
     runs-on: ubuntu-latest
+
+    # ❗ deploy เฉพาะ push main เท่านั้น
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Auth to GCP
+        uses: google-github-actions/auth@v2
         with:
-          node-version: 18
-          cache: 'npm'
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Build project (create dist)
-        run: npm run build
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker \
+            ${{ secrets.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Build & Push Docker image
+        run: |
+          IMAGE=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/todo-list/todo-list-api:latest
+          docker build -t $IMAGE .
+          docker push $IMAGE
+
+      - name: Deploy on GCP VM
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.GCP_VM_HOST }}
+          username: ${{ secrets.GCP_VM_USER }}
+          key: ${{ secrets.GCP_VM_SSH_KEY }}
+          script: |
+            IMAGE=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/todo-list/todo-list-api:latest
+            docker pull $IMAGE
+            docker stop api || true
+            docker rm api || true
+            docker run -d \
+              --name api \
+              -p 3000:3000 \
+              --restart unless-stopped \
+              $IMAGE
