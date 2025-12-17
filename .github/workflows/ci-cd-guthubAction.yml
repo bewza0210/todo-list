@@ -95,16 +95,8 @@ jobs:
               --restart unless-stopped \
               $IMAGE
 
-      # =====================
-      # Trigger Jenkins Deploy (via SSH - internal only)
-      # =====================
+      # trigger ให้ Jenkins build
       - name: Trigger Jenkins Deploy
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.GCP_VM_HOST }}        # VM ที่อยู่ network เดียวกับ Jenkins
-          username: ${{ secrets.GCP_VM_USER }}
-          key: ${{ secrets.GCP_VM_SSH_KEY }}
-          port: 22
-          script: |
-            curl -u sa:1234 \
-              "http://35.240.226.190/job/deploy-main/build?token=deploy-main-token-2025"
+        run: |
+          curl -u sa:1234 \
+            "http://35.240.226.190:8080/job/deploy-main/build?token=deploy-main-token-2025"
