@@ -1,4 +1,4 @@
-# ci-cd-guthubAction.yml
+# ci-cd-githubAction.yml
 name: Node.js CI/CD
 
 on:
@@ -23,7 +23,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -38,38 +38,43 @@ jobs:
   # CD JOB (PUSH main ONLY)
   # =====================
   deploy:
-    name: Deploy Node.js API to GCP VM
+    name: Build Image & Deploy to GCP VM
     needs: ci
     runs-on: ubuntu-latest
 
-    # ❗ deploy เฉพาะ push main เท่านั้น
+    # deploy เฉพาะ push main
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
 
+      # 🔐 Auth เข้า GCP
       - name: Auth to GCP
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
+      # ☁️ Setup gcloud
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
+      # 🐳 ทำให้ Docker push/pull Artifact Registry ได้
       - name: Configure Docker for Artifact Registry
         run: |
           gcloud auth configure-docker \
             ${{ secrets.GCP_REGION }}-docker.pkg.dev --quiet
 
-      - name: Build & Push Docker image
+      # 📦 Build & Push Docker Image
+      - name: Build & Push Docker Image
         run: |
           IMAGE=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/todo-list/todo-list-api:latest
           docker build -t $IMAGE .
           docker push $IMAGE
 
+      # 🚀 SSH เข้า VM แล้ว deploy
       - name: Deploy on GCP VM
         uses: appleboy/ssh-action@v1
         with:
@@ -78,9 +83,12 @@ jobs:
           key: ${{ secrets.GCP_VM_SSH_KEY }}
           script: |
             IMAGE=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/todo-list/todo-list-api:latest
+
             docker pull $IMAGE
+
             docker stop api || true
             docker rm api || true
+
             docker run -d \
               --name api \
               -p 3000:3000 \
