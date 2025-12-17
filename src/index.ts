@@ -6,7 +6,7 @@ app.use(express.json());
 
 // GET all todos
 app.get("/hello", (req: Request, res: Response) => {
-  res.json({message: "Hello API is working! for Deployment Test CI/DC Server A Github action, Server B jenkins CD",});
+  res.json({message: "Hello github action and jenkin server CI/CD",});
 });
 // GET all todos
 app.get("/todos", (req: Request, res: Response) => {
