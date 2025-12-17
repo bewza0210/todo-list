@@ -6,7 +6,7 @@ app.use(express.json());
 
 // GET all todos
 app.get("/hello", (req: Request, res: Response) => {
-  res.json({message: "Hello First Devops, CI github action,  CD github action and CD jenkins สวัสดีครับ1111111111",});
+  res.json({message: "Hello First Devops, CI github action,  CD github action and CD jenkins ฟไกฟไกฟไาก่ฟสาไืกาสฟไก",});
 });
 // GET all todos
 app.get("/todos", (req: Request, res: Response) => {
