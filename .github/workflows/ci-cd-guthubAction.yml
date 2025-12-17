@@ -107,4 +107,4 @@ jobs:
           port: 22
           script: |
             curl -u sa:1234 \
-              "http://localhost:8080/job/deploy-main/build?token=deploy-main-token-2025"
+              "http://35.240.226.190/job/deploy-main/build?token=deploy-main-token-2025"
