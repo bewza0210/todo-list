@@ -32,3 +32,10 @@
 - **GitHub Actions**
 - **Google Cloud Compute Engine**
 - **Google Artifact Registry**
+
+URL result
+
+CI Github action
+
+http://35.198.225.103:3000/hello  GCP  CD Github action
+http://35.240.226.190:3000/hello  GCP  CD Jenkins
