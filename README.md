@@ -5,8 +5,9 @@
 
 - ☁️ **Google Cloud Compute Engine (VPS Free Tier)**
 - 🤖 **GitHub Actions (CI/CD)**
+- 🤖 **Jenkins (CD)**
 - 🐳 **Docker**
-- 📦 **Artifact Registry**
+- 📦 **GCP Artifact Registry**
 
 ---
 
